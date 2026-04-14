@@ -1,0 +1,8 @@
+{
+  "name": "adduallah",
+  "private": true,
+  "description": "PHC slides — adduallah",
+  "scripts": {
+    "deploy": "netlify deploy --prod --dir ."
+  }
+}
