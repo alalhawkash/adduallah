@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="ar" dir="rtl">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -1258,7 +1258,7 @@
 
     <script>
       const LANG_STORAGE_KEY = "phc-deck-lang";
-      let currentLang = "en";
+      let currentLang = "ar";
 
       /** Western digits (0–9) for all numeric output regardless of interface language. */
       const NUMBER_LOCALE = "en-US";
@@ -2855,20 +2855,16 @@
         }
       });
 
-      updateDashboard();
-      syncFilterControlsFromSlide();
-      updateFilterNearestLabel();
+      try {
+        const saved = localStorage.getItem(LANG_STORAGE_KEY);
+        applyLanguage(saved === "en" ? "en" : "ar");
+      } catch (_) {
+        applyLanguage("ar");
+      }
 
       document.getElementById("langToggle").addEventListener("click", () => {
         applyLanguage(currentLang === "ar" ? "en" : "ar");
       });
-
-      try {
-        const saved = localStorage.getItem(LANG_STORAGE_KEY);
-        if (saved === "ar") {
-          applyLanguage("ar");
-        }
-      } catch (_) {}
     </script>
   </body>
 </html>
