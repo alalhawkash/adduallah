@@ -432,6 +432,16 @@
         -webkit-box-decoration-break: clone;
       }
 
+      html.highlights-off .text-highlight {
+        background: transparent !important;
+        color: inherit !important;
+        font-weight: inherit !important;
+        padding: 0 !important;
+        border-radius: 0 !important;
+        box-decoration-break: unset !important;
+        -webkit-box-decoration-break: unset !important;
+      }
+
       .rec-zone-pct {
         color: #525252;
         font-weight: 500;
@@ -1267,6 +1277,10 @@
         <div class="controls__lang-filters">
           <button type="button" id="langToggle" class="lang-toggle" aria-pressed="false" title="العربية">ع</button>
           <div class="filter-row filter-row--controls" role="toolbar" aria-label="Chart filters">
+            <label class="filter-check" for="showTextHighlights">
+              <input type="checkbox" id="showTextHighlights" checked />
+              <span data-i18n="filter_highlights">Text highlights</span>
+            </label>
             <label class="filter-check" for="hideOwnedPhcs">
               <input type="checkbox" id="hideOwnedPhcs" />
               <span data-i18n="filter_owned">Show rented PHCs</span>
@@ -1298,6 +1312,7 @@
 
     <script>
       const LANG_STORAGE_KEY = "phc-deck-lang";
+      const HIGHLIGHTS_STORAGE_KEY = "phc-text-highlights";
       let currentLang = "ar";
 
       /** Western digits (0–9) for all numeric output regardless of interface language. */
@@ -1330,6 +1345,7 @@
           filter_top2: "Exclude high-density rented PHCs",
           filter_nearest: "Nearest PHCs to Nhogah and Albalad",
           filter_nearest_kkh: "Nearest PHCs to Al Kantoub",
+          filter_highlights: "Text highlights (yellow)",
           stat_total_phcs: "Total PHCs",
           stat_total_ben: "Total beneficiaries",
           stat_total_visits: "Total visits",
@@ -1409,6 +1425,7 @@
           filter_top2: "استبعاد المراكز المستأجرة ذات الكثافة العالية",
           filter_nearest: "أقرب المراكز إلى نهوقة والبلد",
           filter_nearest_kkh: "أقرب المراكز إلى الكنتوب",
+          filter_highlights: "تمييز النصوص (الخلفية الصفراء)",
           stat_total_phcs: "إجمالي المراكز",
           stat_total_ben: "إجمالي المستفيدين",
           stat_total_visits: "إجمالي الزيارات",
@@ -2954,6 +2971,24 @@
       }
 
       showSlide(0, "auto");
+
+      (function initTextHighlightsToggle() {
+        const cb = document.getElementById("showTextHighlights");
+        if (!cb) return;
+        function apply() {
+          document.documentElement.classList.toggle("highlights-off", !cb.checked);
+          try {
+            localStorage.setItem(HIGHLIGHTS_STORAGE_KEY, cb.checked ? "1" : "0");
+          } catch (_) {}
+        }
+        try {
+          const v = localStorage.getItem(HIGHLIGHTS_STORAGE_KEY);
+          if (v === "0") cb.checked = false;
+          else if (v === "1") cb.checked = true;
+        } catch (_) {}
+        apply();
+        cb.addEventListener("change", apply);
+      })();
 
       document.getElementById("langToggle").addEventListener("click", () => {
         applyLanguage(currentLang === "ar" ? "en" : "ar");
