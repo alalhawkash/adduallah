@@ -94,6 +94,7 @@
         overflow: hidden;
         display: flex;
         flex-direction: column;
+        touch-action: pan-y;
       }
 
       .slide {
@@ -2798,6 +2799,55 @@
           showSlide(Number(dot.dataset.slide));
         });
       });
+
+      /** Horizontal swipe on the slide area: next/prev slide (RTL-aware). */
+      (function initSlideSwipeNav() {
+        const el = document.getElementById("mainSlider");
+        if (!el) return;
+        const THRESHOLD_PX = 56;
+        const VERTICAL_RATIO = 0.85;
+        let startX = 0;
+        let startY = 0;
+        let tracking = false;
+
+        el.addEventListener(
+          "touchstart",
+          (e) => {
+            if (e.touches.length !== 1) return;
+            tracking = true;
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+          },
+          { passive: true },
+        );
+
+        el.addEventListener(
+          "touchend",
+          (e) => {
+            if (!tracking) return;
+            tracking = false;
+            if (e.changedTouches.length < 1) return;
+            const t = e.changedTouches[0];
+            const dx = t.clientX - startX;
+            const dy = t.clientY - startY;
+            if (Math.abs(dx) < THRESHOLD_PX) return;
+            if (Math.abs(dy) > Math.abs(dx) * VERTICAL_RATIO) return;
+            const rtl = document.documentElement.getAttribute("dir") === "rtl";
+            const towardNext = rtl ? dx > 0 : dx < 0;
+            if (towardNext) showSlide(currentIndex + 1);
+            else showSlide(currentIndex - 1);
+          },
+          { passive: true },
+        );
+
+        el.addEventListener(
+          "touchcancel",
+          () => {
+            tracking = false;
+          },
+          { passive: true },
+        );
+      })();
 
       document.getElementById("hideOwnedPhcs").addEventListener("change", (e) => {
         const v = e.target.checked;
